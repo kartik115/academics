@@ -1,0 +1,13 @@
+<h1>Login Form</h1>
+{% if request.session.error_message %}
+    <p><strong>{{ request.session.error_message }}</strong></p>
+{% endif %}
+
+<form action="{% url 'academics:authenticate' %}" method="post">
+{% csrf_token %}
+    <label for="team_name">User name: </label>
+    <input type="text" name="username"><br>
+    <label for="team_name">Password: </label>
+    <input type="password" name="password" ><br>
+    <input type="Submit">
+</form>

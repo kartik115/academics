@@ -1,0 +1,24 @@
+<table border = "1">
+
+    <tbody>
+    <tr>
+        <th> Name</th>
+        <th> Email</th>
+        <th> Sex</th>
+        <th> Batch</th>
+        <th> Roll Number</th>
+        <th> Joining Date</th>
+    </tr>
+
+    {% for student in students_list %}
+        <tr>
+            <td> <li><a href="/academics/student/{{ student.roll_number }}/">{{ student.student_name }}</a></li> </td>
+            <td> {{ student.user__email }}</td>
+            <td> {{ student.sex }} </td>
+            <td> {{ student.batch }} </td>
+            <td> {{ student.roll_number }} </td>
+            <td> {{ student.joining_date }} </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

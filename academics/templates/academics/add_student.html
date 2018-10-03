@@ -1,0 +1,23 @@
+<h2> Details of : {% if user_type == "student" %} {{ instance.student_name }}
+{% elif user_type == "professor" %} {{ instance.professor_name }} {% endif %}</h2>
+<form action="{% url 'academics:add-user-profile' %}" method="post">
+    {% csrf_token %}
+    {% if user_type == "student" %}
+        <label for="team_name">Batch: </label>
+        <input type="text" name="batch" value="{{ instance.batch }}"><br>
+        <label for="team_name">Roll Number: </label>
+        <input type="text" name="roll_number" value="{{ instance.roll_number }}"><br>
+        <input type="hidden" name="student_name" value="{{ instance.student_name }}">
+    {% elif user_type == "professor" %}
+        <input type="hidden" name="professor_name" value="{{ instance.professor_name }}">
+    {% endif %}
+    <label for="team_name">Sex: </label>
+    <input type="radio" name="sex" value="M" {% if instance.sex == 'M' %} checked {% else %} {% endif %}> Male
+    <input type="radio" name="sex" value="F" {% if instance.sex == 'F' %} checked {% else %} {% endif %}> Female<br>
+    <label for="team_name">Joining Date: </label>
+    <input type="date" name="joining_date" value="{{ instance.joining_date }}"><br>
+    <input type="hidden" name="user" value="{{ instance.user.id }}"><br>
+    <input type="hidden" name="type" value="{{ user_type }}">
+    <input type="Submit">
+    <input type="button" value="Cancel">
+</form>

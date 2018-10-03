@@ -1,0 +1,25 @@
+<h1>Add new {% if type == "student" %} Student {% elif type == "professor" %} Professor {% endif %} </h1>
+<form action="{% url 'academics:user-registration' %}" method="post">
+    {% csrf_token %}
+    <label for="team_name">First name*: </label>
+    <input type="text" name="first_name" required><br>
+    <label for="team_name">Last name*: </label>
+    <input type="text" name="last_name" required><br>
+    <label for="team_name">Email*: </label>
+    <input type="email" name="email" required><br>
+    <label for="team_name">Password*: </label>
+    <input type="password" name="password" required><br>
+    {% if type == "student" %}
+        <label for="team_name">Batch*: </label>
+        <input type="number" name="batch" required><br>
+        <label for="team_name">Roll Number*: </label>
+        <input type="number" name="roll_number" required><br>
+    {% endif %}
+    <label for="team_name">Sex*: </label>
+    <input type="radio" name="sex" value="M" checked> Male
+    <input type="radio" name="sex" value="F"> Female<br>
+    <label for="team_name">Joining Date*: </label>
+    <input type="date" name="joining_date" required><br>
+    <input type="hidden" name="type" value="{{ type }}">
+    <input type="Submit">
+</form>

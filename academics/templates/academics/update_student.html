@@ -1,0 +1,14 @@
+<h2> Details of : {{ student.student_name }} </h2>
+{% if student %}
+    <form action="{% url 'academics:update-student' student.id %}" method="post">
+    {% csrf_token %}
+        <label for="team_name">Roll Number: </label>
+        <input type="number" name="roll_number"><br>
+        <label for="team_name">Sex: </label>
+        <input type="radio" name="sex" value="M" {% if student.sex == 'M' %} checked {% else %} {% endif %}> Male
+        <input type="radio" name="sex" value="F" {% if student.sex == 'F' %} checked {% else %} {% endif %}> Female<br>
+        <input type="Submit">
+    </form>
+{% else %}
+
+{% endif %}
