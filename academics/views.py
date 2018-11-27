@@ -4,33 +4,16 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import login_required
 from django.template import loader
 from django.urls import reverse
-from .models import Student, Professor
+from .models import Student
 from .forms import UserForm, StudentForm, ProfessorForm
-from django.contrib.auth.decorators import login_required
+from .methods import *
 
 
 def sign_in(request):
     return render(request, 'academics/login.html')
-
-
-@login_required
-def user_registration(request):
-    if request.method == "POST":
-        form = UserForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            instance, user_type = generate_user_type_instance(user, request)
-            context = dict(instance=instance, user_type=user_type)
-            return render(request, 'academics/add_student.html', context)
-        else:
-            print(form.errors)
-            return HttpResponseRedirect(reverse('academics:admin-home'))
-    else:
-        user_type = request.GET.get('type', 'student')
-        context = dict(type=user_type)
-        return render(request, 'academics/register_student.html', context)
 
 
 def user_authentication(request):
@@ -46,7 +29,25 @@ def user_authentication(request):
         return HttpResponseRedirect(reverse('academics:sign-in'))
 
 
-@login_required
+@login_required(login_url='/academics/')
+def user_registration(request):
+    if request.method == "POST":
+        form = UserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            instance, user_type = generate_user_type_instance(user, request)
+            context = dict(instance=instance, user_type=user_type)
+            return render(request, 'academics/create_user_profile.html', context)
+        else:
+            print(form.errors)
+            return HttpResponseRedirect(reverse('academics:admin-home'))
+    else:
+        user_type = request.GET.get('type', 'student')
+        context = dict(type=user_type)
+        return render(request, 'academics/user_registeration.html', context)
+
+
+@login_required(login_url='/academics/')
 def view_students(request, roll_number=None):
     if roll_number is not None:
         s = Student.objects.filter(roll_number=roll_number).first()
@@ -64,10 +65,10 @@ def view_students(request, roll_number=None):
 @login_required(login_url='/academics/')
 def admin_home(request):
     print(request.user.is_authenticated)
-    return render(request, 'academics/admin.html')
+    return render(request, 'academics/home.html')
 
 
-@login_required
+@login_required(login_url='/academics/')
 def add_user_profile(request):
     my_group = Group.objects.get(name=request.POST['type'])
     if request.POST['type'] == "student":
@@ -90,23 +91,10 @@ def add_user_profile(request):
         return HttpResponseRedirect(reverse('academics:view-student'))
 
 
-@login_required
+@login_required(login_url='/academics/')
 def update_student(request, student_id):
     s = Student.objects.filter(pk=student_id).first()
     email = request.POST['email']
     s.email = email
     s.save()
     return HttpResponseRedirect(reverse('academics:view-student', args=()))
-
-
-def generate_user_type_instance(user, request):
-    name = user.first_name + ' ' + user.last_name
-    user_type = request.POST['type']
-    if request.POST['type'] == 'student':
-        instance = Student(student_name=name, sex=request.POST['sex'], batch=request.POST['batch'],
-                           joining_date=request.POST['joining_date'], roll_number=request.POST['roll_number'],
-                           user=user)
-    elif request.POST['type'] == 'professor':
-        instance = Professor(professor_name=name, sex=request.POST['sex'], joining_date=request.POST['joining_date'],
-                             user=user)
-    return instance, user_type
